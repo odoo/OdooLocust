@@ -1,3 +1,2 @@
-odoo-client-lib==1.1.2
-locustio
-locust
+odoo-client-lib==1.2.2
+locust==1.0.3

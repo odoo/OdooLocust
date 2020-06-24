@@ -32,7 +32,7 @@ import odoolib
 import time
 import sys
 
-from locust import Locust, events
+from locust import User, events
 
 
 def send(self, service_name, method, *args):
@@ -45,7 +45,7 @@ def send(self, service_name, method, *args):
         res = odoolib.json_rpc(self.url, "call", {"service": service_name, "method": method, "args": args})
     except Exception as e:
         total_time = int((time.time() - start_time) * 1000)
-        events.request_failure.fire(request_type="Odoo JsonRPC", name=call_name, response_time=total_time, exception=e)
+        events.request_failure.fire(request_type="Odoo JsonRPC", name=call_name, response_time=total_time, exception=e, response_length=total_time)
         raise e
     else:
         total_time = int((time.time() - start_time) * 1000)
@@ -57,7 +57,7 @@ odoolib.JsonRPCConnector.send = send
 odoolib.JsonRPCSConnector.send = send
 
 
-class OdooLocust(Locust):
+class OdooLocust(User):
     port = 8069
     database = "demo"
     login = "admin"
@@ -65,8 +65,8 @@ class OdooLocust(Locust):
     protocol = "jsonrpc"
     user_id = -1
 
-    def __init__(self):
-        super(OdooLocust, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(OdooLocust, self).__init__(*args, **kwargs)
         self._connect()
 
     def _connect(self):
